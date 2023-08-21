@@ -13,7 +13,11 @@ import (
 	"time"
 )
 
-const DiscordToken = "1070830691757068389"
+const (
+	DiscordToken    = "1070830691757068389"
+	Timeout         = time.Minute * 20
+	RefreshInterval = 30 * time.Second
+)
 
 var Months = map[time.Month]string{
 	1:  "JAN",
@@ -30,8 +34,6 @@ var Months = map[time.Month]string{
 	12: "DEC",
 }
 
-const Timeout = time.Minute * 20
-
 type HiveDiscordRpc struct {
 	player      *hive.Player
 	currentGame *hive.Game
@@ -42,15 +44,11 @@ type HiveDiscordRpc struct {
 func (r *HiveDiscordRpc) Start() {
 	r.player.Handler = r
 	_ = r.player.Update()
-	t := time.NewTicker(30 * time.Second)
+	t := time.NewTicker(RefreshInterval)
 	for {
 		<-t.C
-		err := client.Login(DiscordToken)
-		if err != nil {
-			log.Fatalln(err.Error())
-		}
 
-		err = r.player.Update()
+		err := r.player.Update()
 		if err != nil {
 			log.Printf(err.Error())
 		}
@@ -99,7 +97,13 @@ func (r *HiveDiscordRpc) HandleStatsUpdated(currentGame *hive.Game) {
 		}
 	}
 
-	err := client.SetActivity(client.Activity{
+	err := client.Login(DiscordToken)
+	if err != nil {
+		log.Printf("Failed to start Discord rich presence. Is Discord running?")
+		return
+	}
+
+	err = client.SetActivity(client.Activity{
 		Details:    currentGame.Name,
 		State:      strings.Join(gameInfo, " "),
 		LargeImage: currentGame.Id,
