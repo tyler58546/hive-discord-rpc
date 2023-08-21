@@ -42,7 +42,6 @@ type HiveDiscordRpc struct {
 func (r *HiveDiscordRpc) Start() {
 	r.player.Handler = r
 	_ = r.player.Update()
-	r.HandleStatsUpdated(hive.CaptureTheFlag)
 	t := time.NewTicker(30 * time.Second)
 	for {
 		<-t.C
