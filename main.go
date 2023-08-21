@@ -34,6 +34,29 @@ var Months = map[time.Month]string{
 	12: "DEC",
 }
 
+func main() {
+	fmt.Printf("Hive Discord Rich Presence\n\n")
+	for {
+		fmt.Print("Enter username: ")
+		reader := bufio.NewReader(os.Stdin)
+		username, _, _ := reader.ReadLine()
+		player, err := hive.GetPlayer(string(username))
+		if err != nil {
+			if errors.Is(err, hive.ErrorInvalidPlayer) {
+				fmt.Println("Invalid player. Please check your spelling and try again.")
+				continue
+			} else {
+				log.Fatalln(err.Error())
+			}
+		}
+		fmt.Printf("\nNow tracking %s.\n", player.UsernameCc)
+		fmt.Printf("Rich presence will start after you finish your next game.\n\n")
+		rpc := HiveDiscordRpc{player: player}
+		rpc.Start()
+		break
+	}
+}
+
 type HiveDiscordRpc struct {
 	player      *hive.Player
 	currentGame *hive.Game
@@ -113,29 +136,6 @@ func (r *HiveDiscordRpc) HandleStatsUpdated(currentGame *hive.Game) {
 	})
 	if err != nil {
 		log.Printf(err.Error())
-	}
-}
-
-func main() {
-	fmt.Printf("Hive Discord Rich Presence\n\n")
-	for {
-		fmt.Print("Enter username: ")
-		reader := bufio.NewReader(os.Stdin)
-		username, _, _ := reader.ReadLine()
-		player, err := hive.GetPlayer(string(username))
-		if err != nil {
-			if errors.Is(err, hive.ErrorInvalidPlayer) {
-				fmt.Println("Invalid player. Please check your spelling and try again.")
-				continue
-			} else {
-				log.Fatalln(err.Error())
-			}
-		}
-		fmt.Printf("\nNow tracking %s.\n", player.UsernameCc)
-		fmt.Printf("Rich presence will start after you finish your next game.\n\n")
-		rpc := HiveDiscordRpc{player: player}
-		rpc.Start()
-		break
 	}
 }
 
