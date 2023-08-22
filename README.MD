@@ -12,3 +12,6 @@ Discord rich presence for The Hive Minecraft server.
 
 ### License
 GPL-3.0
+
+### Disclaimer
+NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT
