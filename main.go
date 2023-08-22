@@ -140,7 +140,7 @@ func (r *HiveDiscordRpc) HandleStatsUpdated(currentGame *hive.Game) {
 }
 
 func isMinecraftRunning() bool {
-	out, _ := runPowershellCommand("((Get-Process -Name Minecraft.Windows -ErrorAction SilentlyContinue).Threads | Where-Object {$_.ThreadState -eq \"Wait\"}).Count -eq ((Get-Process -Name Minecraft.Windows -ErrorAction SilentlyContinue).Threads).Count")
+	out, _ := runPowershellCommand("$process = Get-Process -Name Minecraft.Windows -ErrorAction SilentlyContinue;$suspendedThreads = $process.Threads | Where-Object {$_.WaitReason -eq \"Suspended\"};$suspendedThreads.Count -eq $process.Threads.Count")
 	return out == "False\r\n"
 }
 
